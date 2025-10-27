@@ -1,0 +1,7 @@
+dom6api.monkeydew.com, dom6api.monkeydew.net, dom6api.monkeydew.dev {
+    encode gzip
+    reverse_proxy 127.0.0.1:8002
+    log {
+        output file /var/log/caddy/dom6api_access.log
+    }
+}
