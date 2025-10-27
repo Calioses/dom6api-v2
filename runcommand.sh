@@ -6,6 +6,7 @@ curl -L -o dom6api_linux_bundle.tar.gz https://github.com/Calioses/dom6api-v2/ra
 
 # Extract it
 tar -xzf dom6api_linux_bundle.tar.gz
+chmod -R +x dom6api_linux_bundle
 
 # Kill any existing dom6api_linux process
 pkill dom6api_linux || true
