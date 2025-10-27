@@ -27,29 +27,52 @@ for plat in "${PLATFORMS[@]}"; do
   cp "$CADDY_FILE" "$BUNDLE_DIR/$CADDY_FILE"
 
   cat <<EOF > "$BUNDLE_DIR/start.sh"
+
 #!/usr/bin/env bash
 set -e
-DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_DIR="/opt/${APP_NAME}"
-chmod +x "\$DIR/$OUTPUT"
 
-sudo apt update -y
-sudo apt install -y caddy python3 python3-pip python3-venv curl unzip wget git
+APP_NAME="dom6api"
+OUTPUT="dom6api_linux"
+DATA_FILE="create_tables.sql"
+CADDY_FILE="Caddyfile"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="$DIR/$APP_NAME"
+VENV_DIR="$INSTALL_DIR/venv"
+LOCAL_CADDY="$INSTALL_DIR/caddy"
+
+mkdir -p "$INSTALL_DIR"
+
+# Copy Go binary, SQL, and Caddyfile locally
+cp "$DIR/$OUTPUT" "$INSTALL_DIR/"
+cp "$DIR/$DATA_FILE" "$INSTALL_DIR/"
+cp "$DIR/$CADDY_FILE" "$INSTALL_DIR/"
+
+# Local Python venv
+python3 -m venv "$VENV_DIR"
+source "$VENV_DIR/bin/activate"
 
 pip install --upgrade pip
 pip install playwright
-python3 -m playwright install --with-deps
+python -m playwright install --with-deps
 
-sudo mkdir -p "\$INSTALL_DIR"
-sudo cp "\$DIR/$OUTPUT" "\$INSTALL_DIR/"
-sudo cp "\$DIR/$CADDY_FILE" /etc/caddy/Caddyfile
-sudo cp "\$DIR/$DATA_FILE" "\$INSTALL_DIR/$DATA_FILE"
-sudo systemctl restart caddy
+# Download Caddy binary locally (Linux amd64)
+curl -L -o "$LOCAL_CADDY" "https://github.com/caddyserver/caddy/releases/latest/download/caddy_linux_amd64.tar.gz"
+tar -xzf "$LOCAL_CADDY" -C "$INSTALL_DIR" caddy
+chmod +x "$INSTALL_DIR/caddy"
+rm "$LOCAL_CADDY"
 
-cd "\$INSTALL_DIR"
-echo "Starting $OUTPUT with build mode..."
-nohup "./$OUTPUT" build > "${APP_NAME}.log" 2>&1 &
-echo "$OUTPUT started in build mode in background."
+cd "$INSTALL_DIR"
+
+# Start local Caddy serving current folder
+nohup ./caddy run --config "$CADDY_FILE" > caddy.log 2>&1 &
+
+# Start Go binary in build mode
+chmod +x "$OUTPUT"
+nohup ./"$OUTPUT" build > "${APP_NAME}.log" 2>&1 &
+echo "$OUTPUT and local Caddy started in background."
+
+echo "All installed locally under $INSTALL_DIR"
+
 EOF
 
   chmod +x "$BUNDLE_DIR/start.sh"
