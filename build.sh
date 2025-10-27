@@ -38,6 +38,7 @@ CADDY_FILE="Caddyfile"
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="$DIR/$APP_NAME"
 VENV_DIR="$INSTALL_DIR/venv"
+CADDY_TAR="$INSTALL_DIR/caddy.tar.gz"
 LOCAL_CADDY="$INSTALL_DIR/caddy"
 
 mkdir -p "$INSTALL_DIR"
@@ -56,10 +57,10 @@ pip install playwright
 python -m playwright install --with-deps
 
 # Download Caddy binary locally (Linux amd64)
-curl -L -o "$LOCAL_CADDY" "https://github.com/caddyserver/caddy/releases/latest/download/caddy_linux_amd64.tar.gz"
-tar -xzf "$LOCAL_CADDY" -C "$INSTALL_DIR" caddy
-chmod +x "$INSTALL_DIR/caddy"
-rm "$LOCAL_CADDY"
+curl -L -o "$CADDY_TAR" "https://github.com/caddyserver/caddy/releases/latest/download/caddy_linux_amd64.tar.gz"
+tar -xzf "$CADDY_TAR" -C "$INSTALL_DIR"
+chmod +x "$LOCAL_CADDY"
+rm "$CADDY_TAR"
 
 cd "$INSTALL_DIR"
 
@@ -72,6 +73,7 @@ nohup ./"$OUTPUT" build > "${APP_NAME}.log" 2>&1 &
 echo "$OUTPUT and local Caddy started in background."
 
 echo "All installed locally under $INSTALL_DIR"
+
 
 EOF
 

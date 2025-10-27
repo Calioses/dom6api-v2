@@ -9,6 +9,7 @@ CADDY_FILE="Caddyfile"
 DIR="/c/Users/leron/OneDrive/Desktop/dom6api"
 INSTALL_DIR="/dom6api"
 VENV_DIR="/venv"
+CADDY_TAR="/caddy.tar.gz"
 LOCAL_CADDY="/caddy"
 
 mkdir -p ""
@@ -28,8 +29,8 @@ python -m playwright install --with-deps
 
 # Download Caddy binary locally (Linux amd64)
 curl -L -o "" "https://github.com/caddyserver/caddy/releases/latest/download/caddy_linux_amd64.tar.gz"
-tar -xzf "" -C "" caddy
-chmod +x "/caddy"
+tar -xzf "" -C ""
+chmod +x ""
 rm ""
 
 cd ""
@@ -43,4 +44,5 @@ nohup ./"dom6api_linux" build > "dom6api.log" 2>&1 &
 echo "dom6api_linux and local Caddy started in background."
 
 echo "All installed locally under "
+
 
