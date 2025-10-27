@@ -7,8 +7,8 @@ CADDY_FILE="Caddyfile"
 
 PLATFORMS=(
   "linux amd64 dom6api_linux"
-  "darwin amd64 dom6api_mac"
-  "windows amd64 dom6api_win.exe"
+  # "darwin amd64 dom6api_mac"
+  # "windows amd64 dom6api_win.exe"
 )
 
 rm -rf build
